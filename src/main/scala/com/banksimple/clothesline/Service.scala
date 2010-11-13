@@ -30,8 +30,8 @@ trait ClotheslineService extends BaseService {
   /**
    * Helper function for creating content type responders
    */
-  def responder(f: => () => String) = new AFn() {
-    override def invoke(a: Object, b: Object) = f()
+  def responder(f: => String) = new AFn() {
+    override def invoke(a: Object, b: Object) = f
   }
 
   /** Simple helper for getting an empty map instance */
