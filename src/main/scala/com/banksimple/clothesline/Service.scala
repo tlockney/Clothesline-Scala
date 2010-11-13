@@ -4,7 +4,7 @@ import clojure.lang.{AFn,Associative,IPersistentMap,Keyword}
 import clothesline.service.BaseService
 import clothesline.interop.nodetest.TestResult
 import net.liftweb.json._
-import net.liftweb.jso.JsonAST._
+import net.liftweb.json.JsonAST._
 import net.liftweb.json.JsonParser._
 import com.codahale.yoink._
 
@@ -38,11 +38,4 @@ trait ClotheslineService extends BaseService {
   def emptyMap = PersistentHashMap().empty.underlying
 }
 
-object TransactionListService extends ClotheslineService {
-  override def contentTypesProvided(req: IPersistentMap, graphData: IPersistentMap) = {
-    val result = PersistentHashMap("application/json" -> responder { () =>
-      Serialization.write(TransactionManager.getTransactions(""))
-    })
-    new TestResult(result.underlying, PersistentHashMap())
-  }
-}
+
