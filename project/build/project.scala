@@ -7,8 +7,12 @@ class Project(info: ProjectInfo) extends DefaultProject(info) {
   val clojureRepo = "Clojure Repository" at "http://build.clojure.org/releases"
 
   // dependencies
+
+  // will eventually want to pull from our local build repo... when that exists
   val yoink = "com.codahale" % "yoink_2.8.0.RC2" % "1.1.1-SNAPSHOT"
+
   val clothesline = "Clothesline" % "Clothesline" % "1.0.0-SNAPSHOT"
   val specs = "org.scala-tools.testing" %% "specs" % "1.6.5" % "test"
+  val liftJson = "net.liftweb" %% "lift-json" % "2.1"
 }
 
