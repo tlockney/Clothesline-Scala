@@ -3,16 +3,12 @@ package com.banksimple.clothesline
 import clojure.lang.{AFn,Associative,IPersistentMap,Keyword}
 import clothesline.service.BaseService
 import clothesline.interop.nodetest.TestResult
-import net.liftweb.json._
-import net.liftweb.json.JsonAST._
-import net.liftweb.json.JsonParser._
 import com.codahale.yoink._
 
 /**
  * This will eventually be moved to the Clothesline-scala project
  */
 trait ClotheslineService extends BaseService {
-  implicit val formats = Serialization.formats(NoTypeHints)
 
   /**
    * Grab the params from the request
