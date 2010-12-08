@@ -25,7 +25,7 @@ class CoreTests extends Specification {
   val request = PMap() + (keyword('foo) -> "bar")
   val graphData = PMap()
 
-  "Should be able to pimp paramters" in {
+  "Should be able to pimp parameters" in {
     import Parameters._
 
     var p: APersistentMap = PersistentHashMap.EMPTY

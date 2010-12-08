@@ -15,17 +15,23 @@ class RichTestResult[T](result: T, ann: APersistentMap)  {
   def asTestResult = new TestResult(result, annotations.underlying)
 
   val annotateKeyword = Keyword.intern("annotate")
+  val headersKeyword = Keyword.intern("headers")
 
-  def annotate(p: Tuple2[Object,Object]) = {
-    val a = getAnnotateMap() + p
-    val updatedAnnotations = annotations + (annotateKeyword -> a)
+  def annotate(p: Tuple2[Object,Object]) =
+    updateSubMap(annotateKeyword, p)
+
+  def header(p: Tuple2[Object,Object]) =
+    updateSubMap(headersKeyword, p)
+
+  def updateSubMap(k: Keyword, p: Tuple2[Object,Object]) = {
+    val map = getSubMap(k) + p
+    val updatedAnnotations = annotations + (k -> map)
     new RichTestResult(result, updatedAnnotations.underlying)
   }
 
-  def getAnnotateMap(): PersistentHashMap[Object,Object] = {
-    annotations.getOrElse(annotateKeyword,
-                          PersistentHashMap[Object,Object]())
-  }
+  def getSubMap(k: Keyword): PersistentHashMap[Object,Object] =
+    annotations.getOrElse(k, PersistentHashMap[Object,Object]())
+
 }
 object RichTestResult {
   def apply(b: Boolean) = new RichTestResult(b, Util.emptyMap.underlying)
