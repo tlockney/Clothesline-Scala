@@ -46,6 +46,11 @@ class CoreTests extends Specification {
     results("text/plain").invoke(null,null) must be_==("this is a test")
   }
 
+
+}
+
+class RichResultTests extends Specification {
+
   "RichTestResult" should {
     "accept annotations." in  {
 
@@ -53,21 +58,18 @@ class CoreTests extends Specification {
       val annotated  = richResult.annotate("x" -> "Word")
       val annMap = annotated.annotations
       val pendingAnnMap = annMap(keyword("annotate"))
-      
+
       pendingAnnMap.count() must be_==( 1 )
       pendingAnnMap must havePair(keyword('x) -> "Word")
     }
-        
+
     "accept headers." in {
       import Util._
       val headerizedRichResult = RichTestResult("hey") header( "X-Poop", "true" )
       val annMap = headerizedRichResult.annotations
-      
+
       annMap must haveKey(keyword("headers"))
       annMap(keyword("headers")) must havePair("X-Poop", "true")
     }
   }
-
-  
-    
 }
