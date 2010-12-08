@@ -34,8 +34,8 @@ class RichTestResult[T](result: T, ann: APersistentMap)  {
 
 }
 object RichTestResult {
-  def apply(b: Boolean) = new RichTestResult(b, Util.emptyMap.underlying)
-  def apply(p: APersistentMap) = new RichTestResult(p, PersistentHashMap().underlying)
+  //def apply(b: Boolean) = new RichTestResult(b, Util.emptyMap.underlying)
+  //def apply(p: APersistentMap) = new RichTestResult(p, Util.emptyMap.underlying)
   def apply(r: APersistentMap, a: APersistentMap) = new RichTestResult(r, a)
   def apply[T](o: T) = new RichTestResult(o, Util.emptyMap.underlying)
 
