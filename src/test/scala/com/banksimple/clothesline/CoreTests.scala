@@ -3,27 +3,46 @@ package com.banksimple.clothesline
 import clothesline._
 import clothesline.service._
 import clothesline.interop.nodetest._
-
 import org.specs._
-
 import clojure.lang._
-
 import com.codahale.yoink.{PersistentHashMap => PMap}
 
-class ExampleService extends BaseService {
+import Util._
+
+class ExampleService extends Service {
   override def contentTypesProvided(request: IPersistentMap, graphData: IPersistentMap): TestResult = {
-    var testResult = new TestResult(PersistentHashMap.EMPTY, PersistentHashMap.EMPTY)
-    var annotations = testResult.annotations.asInstanceOf[IPersistentMap]
-    var result = testResult.result.asInstanceOf[IPersistentMap]
-    testResult
+
+    val annotations = PMap()
+    val res = PMap()
+
+    val p = params(request)
+
+    result(res) annotate(keyword('key) -> "value")
+  }
+  override def resourceExists(request: IPersistentMap, graphData: IPersistentMap) = {
+    result(true)
   }
 }
 
 class CoreTests extends Specification {
+  val eg = new ExampleService()
+  val request = PMap() + (keyword('foo) -> "bar")
+  val graphData = PMap()
+
+
+  "Should be able to pimp paramters" in {
+    import Parameters._
+
+    var p: APersistentMap = PersistentHashMap.EMPTY
+    p = p.assoc(Keyword.intern(":foo"),"bar").asInstanceOf[APersistentMap]
+    p(keyword(":foo")) must be_==("bar")
+
+  }
+
   "Ensure that we can create a base service" in {
-    val eg = new ExampleService()
-    val request = PMap()
-    val graphData = PMap()
-    eg.contentTypesProvided(request.underlying, graphData.underlying)
+    val testResult:TestResult = eg.contentTypesProvided(request.underlying, graphData.underlying)
+    val result = testResult.result.asInstanceOf[APersistentMap]
+    val annotations = testResult.annotations.asInstanceOf[APersistentMap]
+    val richResult = RichTestResult(result, annotations)
   }
 }
