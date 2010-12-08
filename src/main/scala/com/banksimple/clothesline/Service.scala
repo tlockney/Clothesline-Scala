@@ -61,6 +61,7 @@ class Service extends BaseService {
   def result(r: Boolean) = RichTestResult(r)
   def result(p: APersistentMap) = RichTestResult(p)
   def result[K,V](p: PersistentHashMap[K,V]) = RichTestResult(p.underlying)
+  def result[T](p: T) = RichTestResult(p)
 
   /**
    * Returns a Parameter object which is really a PersistentHashMap
