@@ -4,38 +4,27 @@ import clojure.lang.{AFn,Associative,IPersistentMap,APersistentMap,Keyword}
 import clothesline.service.BaseService
 import clothesline.interop.nodetest.TestResult
 import com.codahale.yoink._
-
-object Util {
-  val emptyMap = PersistentHashMap[Any,Any]()
-
-  def keyword(str: String) = Keyword.intern(str)
-  def keyword(sym: Symbol) = Keyword.intern(sym.name)
-
-  implicit def string2Keyword(str: String): Keyword = keyword(str)
-  implicit def symbol2Keyword(sym: Symbol): Keyword = keyword(sym.name)
-}
+import Util._
 
 /**
  * Scala-fied "rich"-type version of TestResult
  */
 class RichTestResult[T](result: T, ann: APersistentMap)  {
-  val annotations = new PersistentHashMap[Keyword,PersistentHashMap[Keyword,Object]](ann)
+  val annotations = new PersistentHashMap[Keyword,PersistentHashMap[Object,Object]](ann)
 
   def asTestResult = new TestResult(result, annotations.underlying)
 
   val annotateKeyword = Keyword.intern("annotate")
 
-  type SymOrKeyword = Symbol with Keyword
-
-  def annotate(p: Tuple2[Keyword,Object]) = {
+  def annotate(p: Tuple2[Object,Object]) = {
     val a = getAnnotateMap() + p
     val updatedAnnotations = annotations + (annotateKeyword -> a)
     new RichTestResult(result, updatedAnnotations.underlying)
   }
 
-  def getAnnotateMap(): PersistentHashMap[Keyword,Object] = {
+  def getAnnotateMap(): PersistentHashMap[Object,Object] = {
     annotations.getOrElse(annotateKeyword,
-                          PersistentHashMap[Keyword,Object]())
+                          PersistentHashMap[Object,Object]())
   }
 }
 object RichTestResult {
@@ -66,6 +55,9 @@ class Service extends BaseService {
   def result(p: APersistentMap) = RichTestResult(p)
   def result[K,V](p: PersistentHashMap[K,V]) = RichTestResult(p.underlying)
 
+  /**
+   * Returns a Parameter object which is really a PersistentHashMap
+   */
   def params(request: IPersistentMap): Parameters = {
     val ps = request.valAt(keyword("params")).asInstanceOf[APersistentMap]
     Parameters(ps)
@@ -78,7 +70,16 @@ class Service extends BaseService {
     override def invoke(a: Object, b: Object) = f
   }
 
+  def responders(resp: Tuple2[String, AFn]*): PersistentHashMap[String,AFn] = {
+    var map = PersistentHashMap[String,AFn]()
+    resp.toMap[String,AFn].foreach { r => map = map + r }
+    map
+  }
+
+  implicit def responders2TestResult(r: PersistentHashMap[String,AFn]): TestResult =
+    new TestResult(r.underlying, Util.emptyMap.underlying)
+
   implicit def tuple2TestResult(t: Tuple2[IPersistentMap,IPersistentMap]): TestResult =
-    new TestResult(t._1,t._2)
+    new TestResult(t._1, t._2)
 }
 
