@@ -46,17 +46,28 @@ class CoreTests extends Specification {
     results("text/plain").invoke(null,null) must be_==("this is a test")
   }
 
-  "Ensure we can annotate Rich Results" in {
-    import com.banksimple.clothesline.Util._
+  "RichTestResult" should {
+    "accept annotations." in  {
 
-    val richResult = RichTestResult(true)
-    val annotated  = richResult.annotate("x" -> "Word")
-    val annMap = annotated.annotations
-    val pendingAnnMap = annMap(keyword("annotate"))
-    
-    pendingAnnMap.count() must be_==( 1 )
-    pendingAnnMap.keys map println
-    pendingAnnMap(keyword("x")) must be_==( "Word" )    
+      val richResult = RichTestResult(true)
+      val annotated  = richResult.annotate("x" -> "Word")
+      val annMap = annotated.annotations
+      val pendingAnnMap = annMap(keyword("annotate"))
+      
+      pendingAnnMap.count() must be_==( 1 )
+      pendingAnnMap must havePair(keyword('x) -> "Word")
+    }
+        
+    "accept headers." in {
+      import Util._
+      val headerizedRichResult = RichTestResult("hey") header( "X-Poop", "true" )
+      val annMap = headerizedRichResult.annotations
+      
+      annMap must haveKey(keyword("headers"))
+      annMap(keyword("headers")) must havePair("X-Poop", "true")
+    }
   }
+
+  
     
 }
