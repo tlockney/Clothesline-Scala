@@ -45,4 +45,18 @@ class CoreTests extends Specification {
     val results = new PMap[String,AFn](resultMap)
     results("text/plain").invoke(null,null) must be_==("this is a test")
   }
+
+  "Ensure we can annotate Rich Results" in {
+    import com.banksimple.clothesline.Util._
+
+    val richResult = RichTestResult(true)
+    val annotated  = richResult.annotate("x" -> "Word")
+    val annMap = annotated.annotations
+    val pendingAnnMap = annMap(keyword("annotate"))
+    
+    pendingAnnMap.count() must be_==( 1 )
+    pendingAnnMap.keys map println
+    pendingAnnMap(keyword("x")) must be_==( "Word" )    
+  }
+    
 }

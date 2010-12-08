@@ -17,10 +17,10 @@ class RichTestResult[T](result: T, ann: APersistentMap)  {
   val annotateKeyword = Keyword.intern("annotate")
   val headersKeyword = Keyword.intern("headers")
 
-  def annotate(p: Tuple2[Object,Object]) =
+  def annotate(p: Tuple2[Keyword,Object]) =
     updateSubMap(annotateKeyword, p)
 
-  def header(p: Tuple2[Object,Object]) =
+  def header(p: Tuple2[String,String]) =
     updateSubMap(headersKeyword, p)
 
   def updateSubMap(k: Keyword, p: Tuple2[Object,Object]) = {
