@@ -1,7 +1,7 @@
 package com.banksimple.clothesline
 
-import clojure.lang.{Keyword,APersistentMap}
-import com.codahale.yoink.{PersistentHashMap,PersistentTreeMap}
+import clojure.lang.{Keyword, APersistentMap}
+import com.codahale.yoink.{PersistentHashMap, PersistentTreeMap}
 
 /**
  * General Clojure to Scala interop stuff
