@@ -12,10 +12,10 @@ import Util._
 class RichTestResult[T](result: T, ann: APersistentMap)  {
   val annotations = new PersistentHashMap[Keyword,PersistentHashMap[Object,Object]](ann)
 
-  def asTestResult = new TestResult(result, annotations.underlying)
+  private def asTestResult = new TestResult(result, annotations.underlying)
 
-  val annotateKeyword = Keyword.intern("annotate")
-  val headersKeyword = Keyword.intern("headers")
+  private val annotateKeyword = Keyword.intern("annotate")
+  private val headersKeyword = Keyword.intern("headers")
 
   def annotate(p: Tuple2[Keyword,Object]) =
     updateSubMap(annotateKeyword, p)
@@ -23,19 +23,17 @@ class RichTestResult[T](result: T, ann: APersistentMap)  {
   def header(p: Tuple2[String,String]) =
     updateSubMap(headersKeyword, p)
 
-  def updateSubMap(k: Keyword, p: Tuple2[Object,Object]) = {
+  private def updateSubMap(k: Keyword, p: Tuple2[Object,Object]) = {
     val map = getSubMap(k) + p
     val updatedAnnotations = annotations + (k -> map)
     new RichTestResult(result, updatedAnnotations.underlying)
   }
 
-  def getSubMap(k: Keyword): PersistentHashMap[Object,Object] =
+  private def getSubMap(k: Keyword): PersistentHashMap[Object,Object] =
     annotations.getOrElse(k, PersistentHashMap[Object,Object]())
 
 }
 object RichTestResult {
-  //def apply(b: Boolean) = new RichTestResult(b, Util.emptyMap.underlying)
-  //def apply(p: APersistentMap) = new RichTestResult(p, Util.emptyMap.underlying)
   def apply(r: APersistentMap, a: APersistentMap) = new RichTestResult(r, a)
   def apply[T](o: T) = new RichTestResult(o, Util.emptyMap.underlying)
 
@@ -46,9 +44,11 @@ object RichTestResult {
 /**
  * Scala-fied Parameters object
  */
-class Parameters(paramMap: APersistentMap) extends PersistentHashMap[Keyword,String](paramMap)
+class Parameters(paramMap: APersistentMap) extends PersistentHashMap[String,String](paramMap)
 object Parameters {
   def apply(params: APersistentMap) = new Parameters(params)
+  def fromRequest(request: IPersistentMap): Parameters =
+    new Parameters(request.valAt(keyword("params")).asInstanceOf[APersistentMap])
   implicit def cljMap2Paramters(p: APersistentMap): Parameters = Parameters(p)
 }
 
@@ -62,15 +62,11 @@ class Service extends BaseService {
   def result(p: APersistentMap) = RichTestResult(p)
   def result[K,V](p: PersistentHashMap[K,V]) = RichTestResult(p.underlying)
   def result(p: clojure.lang.PersistentHashSet) = RichTestResult(p)
-  //def result[T](p: T) = RichTestResult(p)
 
   /**
    * Returns a Parameter object which is really a PersistentHashMap
    */
-  def params(request: IPersistentMap): Parameters = {
-    val ps = request.valAt(keyword("params")).asInstanceOf[APersistentMap]
-    Parameters(ps)
-  }
+  def params(request: IPersistentMap): Parameters = Parameters.fromRequest(request)
 
   /**
    * Helper function for creating content type responders

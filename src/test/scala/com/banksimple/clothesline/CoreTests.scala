@@ -20,27 +20,42 @@ class ExampleService extends Service {
   }
 }
 
-class CoreTests extends Specification {
+class CoreSpec extends Specification {
   val eg = new ExampleService()
-  val request = PMap() + (keyword('foo) -> "bar")
-  val graphData = PMap()
+  val ps = (PMap() + ("foo" -> "bar")).underlying
+  val request = (PMap() + (keyword("params") -> ps)).underlying
+  val graphData = PMap().underlying
+
+  "Should be able to get request params as Parameters" in {
+    import Parameters._
+    val p = Parameters.fromRequest(request)
+    p("foo") must haveClass[String]
+    p("foo") must be_==("bar")
+    p.get("foo") must beSome[String]
+    p.get("foo") must beSome("bar")
+  }
 
   "Should be able to pimp parameters" in {
     import Parameters._
-
     var p: APersistentMap = PersistentHashMap.EMPTY
-    p = p.assoc(keyword(":foo"),"bar").asInstanceOf[APersistentMap]
-    p(keyword(":foo")) must be_==("bar")
+    p = p.assoc("foo","bar").asInstanceOf[APersistentMap]
+    val params = Parameters(p)
+    params("foo") must haveClass[String]
+    params("foo") must be_==("bar")
+    params.get("foo") must beSome[String]
+    params.get("foo") must beSome("bar")
   }
 
   "Ensure that we can create a base service" in {
-    val testResult = eg.contentTypesProvided(request.underlying, graphData.underlying)
+    eg must haveSuperClass[Service]
+    val testResult = eg.contentTypesProvided(request, graphData)
+    testResult must haveClass[TestResult]
     val result = testResult.result.asInstanceOf[APersistentMap]
     val annotations = testResult.annotations.asInstanceOf[APersistentMap]
   }
 
   "Assure responders are getting set correctly" in {
-    val testResult = eg.contentTypesProvided(request.underlying, graphData.underlying)
+    val testResult = eg.contentTypesProvided(request, graphData)
     val resultMap = testResult.result.asInstanceOf[APersistentMap]
     val results = new PMap[String,AFn](resultMap)
     results("text/plain").invoke(null,null) must be_==("this is a test")
@@ -49,7 +64,7 @@ class CoreTests extends Specification {
 
 }
 
-class RichResultTests extends Specification {
+class RichResultSpec extends Specification {
 
   "RichTestResult" should {
     "accept annotations." in  {
