@@ -29,7 +29,7 @@ class CoreTests extends Specification {
     import Parameters._
 
     var p: APersistentMap = PersistentHashMap.EMPTY
-    p = p.assoc(keyword(":foo"),"bar").asInstanceOf[APersistentMap]
+    p = p.assoc(keyword(":foo"), "bar").asInstanceOf[APersistentMap]
     p(keyword(":foo")) must be_==("bar")
   }
 
@@ -42,18 +42,14 @@ class CoreTests extends Specification {
   "Assure responders are getting set correctly" in {
     val testResult = eg.contentTypesProvided(request.underlying, graphData.underlying)
     val resultMap = testResult.result.asInstanceOf[APersistentMap]
-    val results = new PMap[String,AFn](resultMap)
-    results("text/plain").invoke(null,null) must be_==("this is a test")
+    val results = new PMap[String, AFn](resultMap)
+    results("text/plain").invoke(null, null) must be_==("this is a test")
   }
-
-
 }
 
 class RichResultTests extends Specification {
-
   "RichTestResult" should {
-    "accept annotations." in  {
-
+    "accept annotations" in  {
       val richResult = RichTestResult(true)
       val annotated  = richResult.annotate("x" -> "Word")
       val annMap = annotated.annotations
@@ -63,7 +59,7 @@ class RichResultTests extends Specification {
       pendingAnnMap must havePair(keyword('x) -> "Word")
     }
 
-    "accept headers." in {
+    "accept headers" in {
       import Util._
       val headerizedRichResult = RichTestResult("hey") header( "X-Poop", "true" )
       val annMap = headerizedRichResult.annotations
