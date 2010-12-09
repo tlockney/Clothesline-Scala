@@ -6,7 +6,6 @@ import clothesline.interop.nodetest.TestResult
 import com.codahale.yoink._
 import Util._
 
-
 /**
  * Scala-fied "rich"-type version of TestResult
  */
@@ -59,11 +58,13 @@ object Parameters {
  */
 class Service extends BaseService {
   import Util._
+  import org.scala_tools.time.Imports._
 
   def result(r: Boolean) = RichTestResult(r)
   def result(p: APersistentMap) = RichTestResult(p)
   def result[K, V](p: PersistentHashMap[K, V]) = RichTestResult(p.underlying)
   def result(p: clojure.lang.PersistentHashSet) = RichTestResult(p)
+  def result(d: DateTime) = RichTestResult(d)
 
   /**
    * Returns a Parameter object which is really a PersistentHashMap

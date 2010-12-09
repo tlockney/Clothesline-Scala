@@ -6,6 +6,7 @@ import clothesline.interop.nodetest._
 import org.specs._
 import clojure.lang._
 import com.codahale.yoink.{PersistentHashMap => PMap}
+import org.scala_tools.time.Imports._
 
 import Util._
 
@@ -83,5 +84,12 @@ class RichResultSpec extends Specification {
       annMap must haveKey(keyword("headers"))
       annMap(keyword("headers")) must havePair("X-Poop", "true")
     }
+
+    "allow JodaTime DateTime objects" in {
+      val date = DateTime.now
+      val richResult = RichTestResult(date)
+      richResult.result must be_==(date)
+    }
+
   }
 }
