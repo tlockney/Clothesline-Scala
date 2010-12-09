@@ -18,6 +18,5 @@ directory:
     cp pom.xml $M2/Clothesline-1.0.0-SNAPSHOT.pom
     rm -r ~/.ivy2/cache/Clothesline
     
-
 This project is already set up to use your local Maven repository,
 so at this point, running 'sbt update' should work correctly.

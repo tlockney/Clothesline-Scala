@@ -6,33 +6,35 @@ import clothesline.interop.nodetest.TestResult
 import com.codahale.yoink._
 import Util._
 
+
 /**
  * Scala-fied "rich"-type version of TestResult
  */
 class RichTestResult[T](result: T, ann: APersistentMap)  {
-  val annotations = new PersistentHashMap[Keyword,PersistentHashMap[Object,Object]](ann)
+  val annotations = new PersistentHashMap[Keyword, PersistentHashMap[Object, Object]](ann)
 
   private def asTestResult = new TestResult(result, annotations.underlying)
 
   private val annotateKeyword = Keyword.intern("annotate")
   private val headersKeyword = Keyword.intern("headers")
 
-  def annotate(p: Tuple2[Keyword,Object]) =
+  def annotate(p: Tuple2[Keyword, Object]) =
     updateSubMap(annotateKeyword, p)
 
-  def header(p: Tuple2[String,String]) =
+  def header(p: Tuple2[String, String]) =
     updateSubMap(headersKeyword, p)
 
-  private def updateSubMap(k: Keyword, p: Tuple2[Object,Object]) = {
+  private def updateSubMap(k: Keyword, p: Tuple2[Object, Object]) = {
     val map = getSubMap(k) + p
     val updatedAnnotations = annotations + (k -> map)
     new RichTestResult(result, updatedAnnotations.underlying)
   }
 
-  private def getSubMap(k: Keyword): PersistentHashMap[Object,Object] =
-    annotations.getOrElse(k, PersistentHashMap[Object,Object]())
+  private def getSubMap(k: Keyword): PersistentHashMap[Object, Object] =
+    annotations.getOrElse(k, PersistentHashMap[Object, Object]())
 
 }
+
 object RichTestResult {
   def apply(r: APersistentMap, a: APersistentMap) = new RichTestResult(r, a)
   def apply[T](o: T) = new RichTestResult(o, Util.emptyMap.underlying)
@@ -44,7 +46,7 @@ object RichTestResult {
 /**
  * Scala-fied Parameters object
  */
-class Parameters(paramMap: APersistentMap) extends PersistentHashMap[String,String](paramMap)
+class Parameters(paramMap: APersistentMap) extends PersistentHashMap[String, String](paramMap)
 object Parameters {
   def apply(params: APersistentMap) = new Parameters(params)
   def fromRequest(request: IPersistentMap): Parameters =
@@ -60,7 +62,7 @@ class Service extends BaseService {
 
   def result(r: Boolean) = RichTestResult(r)
   def result(p: APersistentMap) = RichTestResult(p)
-  def result[K,V](p: PersistentHashMap[K,V]) = RichTestResult(p.underlying)
+  def result[K, V](p: PersistentHashMap[K, V]) = RichTestResult(p.underlying)
   def result(p: clojure.lang.PersistentHashSet) = RichTestResult(p)
 
   /**
@@ -75,16 +77,16 @@ class Service extends BaseService {
     override def invoke(a: Object, b: Object) = f
   }
 
-  def responders(resp: Tuple2[String, AFn]*): PersistentHashMap[String,AFn] = {
-    var map = PersistentHashMap[String,AFn]()
-    resp.toMap[String,AFn].foreach { r => map = map + r }
+  def responders(resp: Tuple2[String, AFn]*): PersistentHashMap[String, AFn] = {
+    var map = PersistentHashMap[String, AFn]()
+    resp.toMap[String, AFn].foreach { r => map = map + r }
     map
   }
 
-  implicit def responders2TestResult(r: PersistentHashMap[String,AFn]): TestResult =
+  implicit def responders2TestResult(r: PersistentHashMap[String, AFn]): TestResult =
     new TestResult(r.underlying, Util.emptyMap.underlying)
 
-  implicit def tuple2TestResult(t: Tuple2[IPersistentMap,IPersistentMap]): TestResult =
+  implicit def tuple2TestResult(t: Tuple2[IPersistentMap, IPersistentMap]): TestResult =
     new TestResult(t._1, t._2)
 }
 
