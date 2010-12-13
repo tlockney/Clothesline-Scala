@@ -2,6 +2,7 @@ lib_managed/
 target/
 project/boot/
 .ensime
-
+*.iml
 /ensime_port
 /.ensime.msg.counter
+.idea/

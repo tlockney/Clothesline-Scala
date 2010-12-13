@@ -1,6 +1,6 @@
 import sbt._
 
-class Project(info: ProjectInfo) extends DefaultProject(info) {
+class Project(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
   val bankSimpleRepoPath = System.getenv("BANKSIMPLE_DEV") + "/BankSimple-Maven-Repo/snapshots"
 
   val publishTo = Resolver.ssh(bankSimpleRepoPath, "localhost")
