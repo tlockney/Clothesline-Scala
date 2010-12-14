@@ -35,10 +35,10 @@ class RichTestResult[T](result: T, var annotations: APersistentMap) {
   }
 
   private def getSubMap(k: Keyword): APersistentMap = {
-    var a = annotations.get(k).asInstanceOf[APersistentMap]
-    if (a == null) { a = clojure.lang.PersistentHashMap.EMPTY.asInstanceOf[APersistentMap] }
-    annotations = annotations.assoc(k, a).asInstanceOf[APersistentMap]
-    a
+    val subMap = if (annotations.containsKey(k)) { annotations.get(k).asInstanceOf[APersistentMap] }
+      else { clojure.lang.PersistentHashMap.EMPTY }
+    annotations = annotations.assoc(k, subMap).asInstanceOf[APersistentMap]
+    subMap
   }
 
 }
