@@ -69,22 +69,17 @@ class RichResultSpec extends Specification {
     "accept annotations" in  {
       val richResult = RichTestResult(true)
       val annotated  = richResult.annotate("x" -> "Word")
-      val annMap = annotated.annotations
-      /*
-      val pendingAnnMap = annMap(keyword("annotate"))
+      val pendingAnnMap = annotated.annotated()
 
       pendingAnnMap.count() must be_==( 1 )
       pendingAnnMap must havePair(keyword('x) -> "Word")
-      */
+
     }
 
     "accept headers" in {
       import Util._
       val headerizedRichResult = RichTestResult("hey") header( "X-Poop", "true" )
-      val annMap = headerizedRichResult.annotations
-
-      annMap must haveKey(keyword("headers"))
-      annMap(keyword("headers")) must havePair("X-Poop", "true")
+      headerizedRichResult.headers() must havePair("X-Poop", "true")
     }
 
     "allow JodaTime DateTime objects" in {

@@ -9,28 +9,37 @@ import Util._
 /**
  * Scala-fied "rich"-type version of TestResult
  */
-class RichTestResult[T](result: T, ann: APersistentMap)  {
-  val annotations = new PersistentHashMap[Keyword, PersistentHashMap[Object, Object]](ann)
+class RichTestResult[T](result: T, var annotations: APersistentMap) {
 
-  private def asTestResult = new TestResult(result, annotations.underlying)
+  private def asTestResult = new TestResult(result, annotations)
 
   private val annotateKeyword = Keyword.intern("annotate")
   private val headersKeyword = Keyword.intern("headers")
 
-  def annotate(p: Tuple2[Keyword, Object]) =
+  def annotate(p: Tuple2[Keyword, Object]) = {
     updateSubMap(annotateKeyword, p)
+  }
 
   def header(p: Tuple2[String, String]) =
     updateSubMap(headersKeyword, p)
 
+  def annotated() = new PersistentHashMap[Keyword,Object](getSubMap(annotateKeyword))
+  def headers() = new PersistentHashMap[String, String](getSubMap(headersKeyword))
+
+
   private def updateSubMap(k: Keyword, p: Tuple2[Object, Object]) = {
-    val map = getSubMap(k) + p
-    val updatedAnnotations = annotations + (k -> map)
-    new RichTestResult(result, updatedAnnotations.underlying)
+    val map: APersistentMap = getSubMap(k)
+    val updatedMap = map.assoc(p._1, p._2)
+    val updatedAnnotations = annotations.assoc(k, updatedMap).asInstanceOf[APersistentMap]
+    new RichTestResult(result, updatedAnnotations)
   }
 
-  private def getSubMap(k: Keyword): PersistentHashMap[Object, Object] =
-    annotations.getOrElse(k, PersistentHashMap[Object, Object]())
+  private def getSubMap(k: Keyword): APersistentMap = {
+    var a = annotations.get(k).asInstanceOf[APersistentMap]
+    if (a == null) { a = clojure.lang.PersistentHashMap.EMPTY.asInstanceOf[APersistentMap] }
+    annotations = annotations.assoc(k, a).asInstanceOf[APersistentMap]
+    a
+  }
 
 }
 
