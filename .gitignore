@@ -6,3 +6,6 @@ project/boot/
 /ensime_port
 /.ensime.msg.counter
 .idea/
+.DS_Store
+*~
+*#
