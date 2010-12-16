@@ -15,6 +15,7 @@ class Project(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
   // dependencies
   val clothesline = "clothesline" % "clothesline" % "0.1.1-SNAPSHOT"
   val yoink = "com.codahale" % "yoink_2.8.0.RC2" % "1.1.1-SNAPSHOT"
+  val logula = "com.codahale" %% "logula" % "2.0.0"
   val specs = "org.scala-tools.testing" %% "specs" % "1.6.6" % "test"
   val scalaTime = "org.scala-tools.time" % "time_2.8.0" % "0.2"
 }
