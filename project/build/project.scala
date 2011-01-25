@@ -1,16 +1,15 @@
 import sbt._
 
 class Project(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
-  val bankSimpleRepoPath = System.getenv("BANKSIMPLE_DEV") + "/BankSimple-Maven-Repo/snapshots"
 
-  val publishTo = Resolver.ssh(bankSimpleRepoPath, "localhost")
-  // repositories
-  val bankSimpleSnapshotRepo = "BankSimple Snapshot Repository" at "file://" + bankSimpleRepoPath
-  val clojureReleaseRepo = "Clojure Release Repository" at "http://build.clojure.org/releases"
-  val clojureSnapshotRepo = "Clojure Snapshot Repository" at "http://build.clojure.org/snapshots"
-  val clojarsRepo = "Clojars Repository" at "http://clojars.org/repo/"
-  val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
-  val codaRepo = "Coda Hale's Repository" at "http://repo.codahale.com/"
+  val publishTo = "BankSimple Nexus Snapshots" at "http://ci.banksimple.com:8081/nexus/content/repositories/snapshots"
+
+  Credentials(Path.userHome / ".ivy2" / ".credentials", log)
+
+  override def repositories = Set("BankSimple Nexus Repo" at "http://ci.banksimple.com:8081/nexus/content/groups/public",
+                                  "Local M2 Repo" at "file://" + (Path.userHome/".m2"/"repository").toString)
+
+  override def ivyRepositories = Seq(Resolver.defaultLocal(None)) ++ repositories
 
   // dependencies
   val clothesline = "clothesline" % "clothesline" % "0.1.1-SNAPSHOT"
