@@ -1,9 +1,10 @@
 package com.banksimple.clothesline
 
-import clojure.lang.{AFn,Associative,IPersistentMap,APersistentMap,Keyword}
+import clojure.lang.{AFn,Fn,Associative,IPersistentMap,APersistentMap,Keyword}
 import clothesline.service.BaseService
 import clothesline.interop.nodetest.TestResult
 import com.codahale.yoink._
+import com.codahale.logula.Logging
 import Util._
 
 /**
@@ -65,7 +66,7 @@ object Parameters {
 /**
  * Customized Scala version of BaseService
  */
-class Service extends BaseService {
+class Service extends BaseService with Logging {
   import Util._
   import org.scala_tools.time.Imports._
 
@@ -79,6 +80,17 @@ class Service extends BaseService {
    * Returns a Parameter object which is really a PersistentHashMap
    */
   def params(request: IPersistentMap): Parameters = Parameters.fromRequest(request)
+
+  /**
+   * Gets the body of the request
+   */
+  def body(request: IPersistentMap): String = request.valAt(keyword("body")).asInstanceOf[String]
+
+  val debugLogger = new AFn() with Fn {
+    override def invoke(msg: Object): Object = {
+      log.debug("%s",msg).asInstanceOf[Object] // don't really need the return val here
+    }
+  }
 
   /**
    * Helper function for creating content type responders
