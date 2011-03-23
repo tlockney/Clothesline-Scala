@@ -2,11 +2,11 @@ import sbt._
 
 class Project(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
 
-  val publishTo = "BankSimple Nexus Snapshots" at "http://ci.banksimple.com:8081/nexus/content/repositories/snapshots"
+  val publishTo = "BankSimple Nexus Snapshots" at "http://nexus.banksimple.com/content/repositories/snapshots"
 
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
-  override def repositories = Set("BankSimple Nexus Repo" at "http://ci.banksimple.com:8081/nexus/content/groups/public",
+  override def repositories = Set("BankSimple Nexus Repo" at "http://nexus.banksimple.com/content/groups/public",
                                   "Local M2 Repo" at "file://" + (Path.userHome/".m2"/"repository").toString)
 
   override def ivyRepositories = Seq(Resolver.defaultLocal(None)) ++ repositories
