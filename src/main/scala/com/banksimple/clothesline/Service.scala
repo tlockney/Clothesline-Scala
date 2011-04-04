@@ -4,7 +4,7 @@ import clojure.lang.{AFn,Fn,Associative,IPersistentMap,APersistentMap,Keyword}
 import clothesline.service.BaseService
 import clothesline.interop.nodetest.TestResult
 import com.codahale.yoink._
-import com.codahale.logula.Logging
+import com.banksimple.util.Logging
 import Util._
 
 /**
@@ -84,11 +84,13 @@ class Service extends BaseService with Logging {
   /**
    * Gets the body of the request
    */
-  def body(request: IPersistentMap): String = request.valAt(keyword("body")).asInstanceOf[String]
+  def body(request: IPersistentMap): java.io.InputStream =
+    request.valAt(keyword("body")).asInstanceOf[java.io.InputStream]
 
   val debugLogger = new AFn() with Fn {
     override def invoke(msg: Object): Object = {
-      log.debug("%s",msg).asInstanceOf[Object] // don't really need the return val here
+      log.debug("%s",msg)
+      new Object()
     }
   }
 
